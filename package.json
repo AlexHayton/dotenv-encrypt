@@ -1,0 +1,71 @@
+{
+  "name": "dotenv-encrypt-kms",
+  "version": "1.0.0",
+  "description": "A script to encrypt/decrypt a dotenv file using a KMS key",
+  "main": "dist/dotenv-encrypt-kms.js",
+  "umd:main": "dist/dotenv-encrypt-kms.umd.js",
+  "module": "dist/dotenv-encrypt-kms.mjs",
+  "bin": {
+    "dotenv-encrypt-kms": "dist/dotenv-encrypt-kms.js"
+  },
+  "files": [
+    "dist",
+    "readme.md"
+  ],
+  "dependencies": {
+    "aws-sdk": "^2.719.0",
+    "bluebird": "^3.7.2",
+    "lodash": "^4.17.19",
+    "yargs": "15.3.1"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.32",
+    "@types/jest": "^25.2.1",
+    "@types/lodash": "^4.14.158",
+    "@types/yargs": "^15.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^7.2.1",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-formatter-pretty": "^3.0.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-unicorn": "^18.0.1",
+    "jest": "^25.3.0",
+    "microbundle": "^0.11.0",
+    "prettier": "^2.0.4",
+    "ts-jest": "^25.4.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "build": "microbundle -o dist/ --sourcemap false --compress false",
+    "dev": "microbundle watch -o dist/ --sourcemap false --compress false",
+    "test": "jest --coverage",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "start": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexhayton/dotenv-encrypt-kms"
+  },
+  "keywords": [],
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "node_modules",
+      "generators/app/templates"
+    ],
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    }
+  },
+  "author": "alexhayton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexhayton/dotenv-encrypt-kms/issues"
+  },
+  "homepage": "https://github.com/alexhayton/dotenv-encrypt-kms#readme"
+}
