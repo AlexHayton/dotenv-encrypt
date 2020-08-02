@@ -1,5 +1,6 @@
+import difference from "lodash/difference";
 import { reduce } from "bluebird";
-import { StringKeyedObject, KeyValuePair, ReducerFunction } from "./types";
+import { StringKeyedObject, ReducerFunction } from "./types";
 
 export async function mapStringKeyedObject(
   obj: StringKeyedObject,
@@ -10,20 +11,29 @@ export async function mapStringKeyedObject(
   return mappedObject;
 }
 
+export interface ObjectDifferences {
+  changedKeys: string[],
+  removedKeys: string[],
+}
 export function getObjectDifferences(
   original: StringKeyedObject,
   newObject: StringKeyedObject
-): string[] {
+): ObjectDifferences {
   const keys = Object.keys(newObject);
-  const differences = keys.reduce((differentKeys: string[], key) => {
+  const changedKeys = keys.reduce((differentKeys: string[], key) => {
     if (newObject[key] !== original[key]) {
       differentKeys.push(key);
     }
     return differentKeys;
   }, []);
-  return differences;
+
+  const removedKeys = difference(Object.keys(original), keys);
+
+  return {
+    changedKeys,
+    removedKeys,
+  }
 }
 
-type KeyValuePair = string[]
-export const outputEnvValue = ([key, value]: KeyValuePair): string =>
+export const outputEnvValue = ([key, value]: string[]): string =>
   `${key}="${value}"`;

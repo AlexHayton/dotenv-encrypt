@@ -82,3 +82,6 @@ src/**/*.js
 
 # Compiled JavaScript files
 dist
+
+.env
+.env.encrypted

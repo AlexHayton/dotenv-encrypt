@@ -1,14 +1,13 @@
 /* eslint-disable no-param-reassign */
-import AWS from "aws-sdk";
+import * as AWS from "aws-sdk";
 import { StringKeyedObject } from "./types";
 import { mapStringKeyedObject } from "./util";
-
-const kms = new AWS.KMS();
 
 export async function decryptValues(
   encryptedValues: StringKeyedObject,
   kmsKeyId: string
 ): Promise<StringKeyedObject> {
+  const kms = new AWS.KMS();
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
@@ -21,7 +20,7 @@ export async function decryptValues(
         })
         .promise();
 
-      obj[key] = data.Plaintext.toString();
+      obj[key] = data.Plaintext?.toString() || "";
       return obj;
     }
   );
@@ -31,6 +30,7 @@ export async function encryptValues(
   encryptedValues: StringKeyedObject,
   kmsKeyId: string
 ): Promise<StringKeyedObject> {
+  const kms = new AWS.KMS();
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
@@ -44,7 +44,7 @@ export async function encryptValues(
         })
         .promise();
 
-      obj[key] = data.CiphertextBlob.toString("base64");
+      obj[key] = data.CiphertextBlob?.toString("base64") || "";
       return obj;
     }
   );
