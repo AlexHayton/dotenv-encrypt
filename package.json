@@ -2,11 +2,9 @@
   "name": "dotenv-encrypt-kms",
   "version": "1.0.0",
   "description": "A script to encrypt/decrypt a dotenv file using a KMS key",
-  "main": "dist/dotenv-encrypt-kms.js",
-  "umd:main": "dist/dotenv-encrypt-kms.umd.js",
-  "module": "dist/dotenv-encrypt-kms.mjs",
+  "main": "dist/index.js",
   "bin": {
-    "dotenv-encrypt-kms": "dist/dotenv-encrypt-kms.js"
+    "dotenv-encrypt-kms": "dist/start.js"
   },
   "files": [
     "dist",
@@ -36,7 +34,6 @@
     "eslint-plugin-unicorn": "^18.0.1",
     "jest": "^25.3.0",
     "jest-mock-process": "^1.4.0",
-    "microbundle": "^0.11.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
     "ts-node": "^8.10.2",
@@ -44,11 +41,11 @@
     "uuid": "^8.3.0"
   },
   "scripts": {
-    "build": "microbundle -o dist/ --sourcemap false --compress false",
-    "dev": "microbundle watch -o dist/ --sourcemap false --compress false",
+    "build": "tsc && rm dist/*.spec.*",
+    "dev": "tsc --watch",
     "test": "jest --coverage",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/start.ts"
   },
   "repository": {
     "type": "git",

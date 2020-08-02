@@ -20,7 +20,7 @@ export async function decryptValues(
         })
         .promise();
 
-      obj[key] = data.Plaintext?.toString() || "";
+      obj[key] = (data.Plaintext && data.Plaintext.toString()) || "";
       return obj;
     }
   );
@@ -44,7 +44,7 @@ export async function encryptValues(
         })
         .promise();
 
-      obj[key] = data.CiphertextBlob?.toString("base64") || "";
+      obj[key] = (data.CiphertextBlob && data.CiphertextBlob.toString("base64")) || "";
       return obj;
     }
   );

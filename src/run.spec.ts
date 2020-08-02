@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
 import { promisify } from "util";
 import { v4 as uuid } from "uuid";
@@ -14,12 +15,10 @@ const stat = promisify(fs.stat);
 jest.mock("yargs");
 jest.mock("./encrypt");
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockEncryptValues = encryptValues as jest.Mock<any, any>;
 mockEncryptValues.mockResolvedValue({
   KEY: "ENCRYPTED_VALUE",
 });
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockDecryptValues = decryptValues as jest.Mock<any, any>;
 mockDecryptValues.mockResolvedValue({
   KEY: "VALUE",
