@@ -18,6 +18,14 @@ describe("Parsing", () => {
       parsed = await parse(file);
     });
 
+    it("correctly parses an empty key", () => {
+      expect(parsed.EMPTY).toEqual("");
+    });
+
+    it("correctly parses an empty quoted key", () => {
+      expect(parsed.EMPTY_QUOTED).toEqual("");
+    });
+
     it("correctly parses a standard key", () => {
       expect(parsed.KEY).toEqual("VALUE");
     });
@@ -32,6 +40,10 @@ describe("Parsing", () => {
 
     it("correctly parses a quoted string", () => {
       expect(parsed.QUOTED).toEqual("Play it again, Sam");
+    });
+
+    it("correctly parses a single-quoted string", () => {
+      expect(parsed.SINGLE_QUOTED).toEqual("Again!");
     });
 
     it("correctly parses a multiline string", () => {
