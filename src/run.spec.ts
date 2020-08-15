@@ -7,6 +7,7 @@ import yargs from "yargs";
 import { encryptValues, decryptValues } from "./encrypt";
 import { run } from "./run";
 
+const exists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
 const unlink = promisify(fs.unlink);
 const writeFile = promisify(fs.writeFile);
@@ -14,6 +15,9 @@ const stat = promisify(fs.stat);
 
 jest.mock("yargs");
 jest.mock("./encrypt");
+
+const DECRYPTED_FILENAME = "./.env";
+const ENCRYPTED_FILENAME = "./.env.encrypted";
 
 const mockEncryptValues = encryptValues as jest.Mock<any, any>;
 mockEncryptValues.mockResolvedValue({
@@ -76,14 +80,18 @@ describe("Running the CLI", () => {
   describe("with a key provided", () => {
     beforeEach(async () => {
       argvMock.key = uuid();
-      await unlink("./.env");
-      await unlink("./.env.encrypted");
+      if (await exists(DECRYPTED_FILENAME)) {
+        await unlink(DECRYPTED_FILENAME);
+      }
+      if (await exists(ENCRYPTED_FILENAME)) {
+        await unlink(ENCRYPTED_FILENAME);
+      }
     });
 
     describe("encrypting", () => {
       beforeEach(async () => {
         argvMock._ = ["encrypt"];
-        await writeFile("./.env", "KEY=VALUE");
+        await writeFile(DECRYPTED_FILENAME, "KEY=VALUE");
       });
 
       it("can encrypt a file end-to-end when none exists yet", async () => {
@@ -94,20 +102,20 @@ describe("Running the CLI", () => {
           argvMock.key
         );
         expect(mockDecryptValues).not.toHaveBeenCalled();
-        const encryptedFile = await readFile("./.env.encrypted");
+        const encryptedFile = await readFile(ENCRYPTED_FILENAME);
         expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
       });
 
       it("skips encryption if the encrypted file hasn't changed", async () => {
-        await writeFile("./.env.encrypted", 'KEY="ENCRYPTED_VALUE"');
-        const fileStats = await stat("./.env.encrypted");
+        await writeFile(ENCRYPTED_FILENAME, 'KEY="ENCRYPTED_VALUE"');
+        const fileStats = await stat(ENCRYPTED_FILENAME);
 
         await run();
 
         expect(mockEncryptValues).not.toHaveBeenCalled();
-        const encryptedFile = await readFile("./.env.encrypted");
+        const encryptedFile = await readFile(ENCRYPTED_FILENAME);
         expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
-        const newFileStats = await stat("./.env.encrypted");
+        const newFileStats = await stat(ENCRYPTED_FILENAME);
         expect(fileStats.mtimeMs).toEqual(newFileStats.mtimeMs);
       });
     });
@@ -115,7 +123,7 @@ describe("Running the CLI", () => {
     describe("decrypting", () => {
       beforeEach(async () => {
         argvMock._ = ["decrypt"];
-        await writeFile("./.env.encrypted", 'KEY="ENCRYPTED_VALUE"');
+        await writeFile(ENCRYPTED_FILENAME, 'KEY="ENCRYPTED_VALUE"');
       });
 
       it("can decrypt a file end-to-end", async () => {
@@ -128,7 +136,7 @@ describe("Running the CLI", () => {
           argvMock.key
         );
         expect(mockEncryptValues).not.toHaveBeenCalled();
-        const decryptedFile = await readFile("./.env");
+        const decryptedFile = await readFile(DECRYPTED_FILENAME);
         expect(decryptedFile.toString()).toEqual('KEY="VALUE"');
       });
     });
