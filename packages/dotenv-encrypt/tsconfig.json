@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist/"
+  },
+  "include": ["src/**/*.ts", "../dotenv-encrypt/src/run.spec.ts", "../dotenv-encrypt/src/run.ts", "../dotenv-encrypt/src/util.spec.ts", "../dotenv-encrypt/src/util.ts", "../dotenv-encrypt/src/types.ts", "../dotenv-encrypt/src/parse.spec.ts", "../dotenv-encrypt/src/parse.ts"],
+}

@@ -3,7 +3,6 @@ import { promisify } from "util";
 import yargs, { Argv } from "yargs";
 import { EOL } from "os";
 import toPairs from "lodash/toPairs";
-import { decryptValues, encryptValues } from "./encrypt";
 import { parse } from "./parse";
 import {
   getObjectDifferences,
@@ -108,13 +107,13 @@ export async function run(): Promise<void> {
 
   switch (command) {
     case "encrypt": {
-      await encryptAndWrite(kmsKeyId);
+      await encryptAndWrite(encyptFunc);
       console.log(`Successfully encrypted values into ${encryptedEnvFilePath}`);
       return;
     }
 
     case "decrypt": {
-      await decryptAndWrite(kmsKeyId);
+      await decryptAndWrite(encryptFunc);
       console.log(`Successfully decrypted values into ${decryptedEnvFilePath}`);
       return;
     }

@@ -1,0 +1,59 @@
+{
+    "name": "dotenv-encrypt",
+    "version": "1.0.1",
+    "description": "Common files for the dotenv-encrypt modules",
+    "main": "dist/index.js",
+    "files": [
+      "dist",
+      "readme.md"
+    ],
+    "dependencies": {
+      "bluebird": "^3.7.2",
+      "lodash": "^4.17.19",
+      "yargs": "15.3.1"
+    },
+    "devDependencies": {
+      "@homeservenow/eslint-config-base": "^2.0.1",
+      "@types/bluebird": "^3.5.32",
+      "@types/jest": "^25.2.1",
+      "@types/lodash": "^4.14.158",
+      "@types/uuid": "^8.0.0",
+      "@types/yargs": "^15.0.0",
+      "eslint": "^6.8.0",
+      "jest": "^25.3.0",
+      "jest-mock-process": "^1.4.0",
+      "prettier": "^2.0.4",
+      "ts-jest": "^25.4.0",
+      "ts-node": "^8.10.2",
+      "typescript": "^3.8.3",
+      "uuid": "^8.3.0"
+    },
+    "scripts": {
+      "build": "tsc && rm dist/*.spec.*",
+      "dev": "tsc --watch",
+      "test": "jest --coverage",
+      "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+      "start": "ts-node src/start.ts"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/alexhayton/dotenv-encrypt"
+    },
+    "keywords": [],
+    "jest": {
+      "testEnvironment": "node",
+      "testPathIgnorePatterns": [
+        "node_modules",
+        "generators/app/templates"
+      ],
+      "transform": {
+        "^.+\\.ts?$": "ts-jest"
+      }
+    },
+    "author": "alexhayton",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/alexhayton/dotenv-encrypt/issues"
+    },
+    "homepage": "https://github.com/alexhayton/dotenv-encrypt#readme"
+  }

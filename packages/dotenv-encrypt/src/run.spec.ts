@@ -4,7 +4,6 @@ import { promisify } from "util";
 import { v4 as uuid } from "uuid";
 import { mockProcessExit, mockConsoleLog } from "jest-mock-process";
 import yargs from "yargs";
-import { encryptValues, decryptValues } from "./encrypt";
 import { run } from "./run";
 
 const exists = promisify(fs.exists);
@@ -14,17 +13,14 @@ const writeFile = promisify(fs.writeFile);
 const stat = promisify(fs.stat);
 
 jest.mock("yargs");
-jest.mock("./encrypt");
 
 const DECRYPTED_FILENAME = "./.env";
 const ENCRYPTED_FILENAME = "./.env.encrypted";
 
-const mockEncryptValues = encryptValues as jest.Mock<any, any>;
-mockEncryptValues.mockResolvedValue({
+const mockEncryptValues = jest.fn().mockResolvedValue({
   KEY: "ENCRYPTED_VALUE",
 });
-const mockDecryptValues = decryptValues as jest.Mock<any, any>;
-mockDecryptValues.mockResolvedValue({
+const mockDecryptValues = jest.fn().mockResolvedValue({
   KEY: "VALUE",
 });
 

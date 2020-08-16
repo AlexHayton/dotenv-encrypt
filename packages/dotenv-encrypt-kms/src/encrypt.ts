@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import * as AWS from "aws-sdk";
-import { StringKeyedObject } from "./types";
-import { mapStringKeyedObject } from "./util";
+import { StringKeyedObject } from "../../dotenv-encrypt/src/types";
+import { mapStringKeyedObject } from "../../dotenv-encrypt/src/util";
 
 export async function decryptValues(
   encryptedValues: StringKeyedObject,
