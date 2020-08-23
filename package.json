@@ -2,9 +2,9 @@
   "name": "dotenv-encrypt-kms",
   "version": "1.0.9",
   "description": "A script to encrypt/decrypt a dotenv file using a KMS key",
-  "main": "dist/src/index.js",
+  "main": "out/src/index.js",
   "bin": {
-    "dotenv-encrypt-kms": "dist/src/start.js"
+    "dotenv-encrypt-kms": "out/src/start.js"
   },
   "files": [
     "out",

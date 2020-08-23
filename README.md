@@ -1,3 +1,8 @@
+[![NPM version][npm-image]](npm-url)
+[![CircleCI][circleci-image]](circleci-url)
+[![Dependency Status][daviddm-image]][daviddm-url]
+[![codecov][codecov-image]](codecov-url)
+
 # dotenv-encrypt-kms
 
 Does your team have a magic .env file they are passing around for local development? Do you keep your deployment secrets in a different place than your code, do you find it hard to track what changed, when? This is the solution for you!
@@ -39,3 +44,12 @@ dotenv-encrypt-kms --decrypt --key <KMS Key Id>
 | --decryptedFile | Specify the name for the decrypted file (defaults to `.env`)           |
 | --encrypt       | Encrypt what is in the .env file and save it.                          |
 | --decrypt       | Decrypt what is in the .env.encrypted file and save it.                |
+
+[npm-image]: https://badge.fury.io/js/dotenv-encrypt-kms.svg
+[npm-url]: https://npmjs.org/package/dotenv-encrypt-kms
+[circleci-image]: https://circleci.com/gh/AlexHayton/dotenv-encrypt-kms.svg?style=shield
+[circleci-url]: https://circleci.com/gh/AlexHayton/dotenv-encrypt-kms
+[daviddm-image]: https://david-dm.org/alexhayton/dotenv-encrypt-kms.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/alexhayton/dotenv-encrypt-kms
+[codecov-image]: https://codecov.io/gh/AlexHayton/dotenv-encrypt/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/AlexHayton/dotenv-encrypt
