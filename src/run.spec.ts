@@ -110,7 +110,7 @@ describe("Running the CLI", () => {
         const expectedVersion = (await import("../package.json")).version;
         expect(encryptedFile.toString()).toEqual(
           `# Generated with dotenv-decrypt-kms version ${expectedVersion}\n` +
-            `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${key} --region=${region}\n` +
+            `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${key} --region=${region}"\n` +
             'KEY="ENCRYPTED_VALUE"'
         );
       });

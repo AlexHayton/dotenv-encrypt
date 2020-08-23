@@ -48,7 +48,7 @@ async function generateCommentLines(
   const pj = await import("../package.json");
   return [
     `# Generated with dotenv-decrypt-kms version ${pj.version}`,
-    `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${kmsKeyId} --region=${region}`,
+    `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${kmsKeyId} --region=${region}"`,
   ];
 }
 
