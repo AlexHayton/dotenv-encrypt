@@ -58,6 +58,9 @@ jobs:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/project/.npmrc
       - run:
+          name: Dry run
+          command: npm publish --dry-run
+      - run:
           name: Publish package
           command: |
             mkdir ~/.ssh/
@@ -66,6 +69,8 @@ jobs:
             git config --global user.name "alexhayton"
             git branch --set-upstream-to master
             npx release-it
+      - store_artifacts:
+          path: out/**
 
 workflows:
   version: 2
