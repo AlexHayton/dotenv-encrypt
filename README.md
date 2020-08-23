@@ -47,7 +47,10 @@ dotenv-encrypt-kms --decrypt --key <KMS Key Id>
 
 [npm-image]: https://badge.fury.io/js/dotenv-encrypt-kms.svg
 [npm-url]: https://npmjs.org/package/dotenv-encrypt-kms
-[circleci-image]: https://circleci.com/gh/AlexHayton/dotenv-encrypt-kms.svg?style=shield
+
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://circleci.com/gh/circleci/circleci-docs)
+
+[circleci-image]: https://circleci.com/gh/alexhayton/dotenv-encrypt-kms.svg?style=shield
 [circleci-url]: https://circleci.com/gh/AlexHayton/dotenv-encrypt-kms
 [daviddm-image]: https://david-dm.org/alexhayton/dotenv-encrypt-kms.svg?theme=shields.io
 [daviddm-url]: https://david-dm.org/alexhayton/dotenv-encrypt-kms
