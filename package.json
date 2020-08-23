@@ -4,7 +4,7 @@
   "description": "A script to encrypt/decrypt a dotenv file using a KMS key",
   "main": "dist/index.js",
   "bin": {
-    "dotenv-encrypt-kms": "dist/start.js"
+    "dotenv-encrypt-kms": "dist/src/start.js"
   },
   "files": [
     "dist",
@@ -41,7 +41,7 @@
     "uuid": "^8.3.0"
   },
   "scripts": {
-    "build": "tsc && rm -f dist/*.spec.*",
+    "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest --coverage",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
