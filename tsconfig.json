@@ -7,7 +7,7 @@
     "declaration": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "dist/"
+    "outDir": "out/"
   },
   "include": ["src/**/*.ts"],
 }

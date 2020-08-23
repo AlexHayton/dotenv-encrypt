@@ -81,7 +81,7 @@ test_results
 src/**/*.js
 
 # Compiled JavaScript files
-dist
+out/
 
 .env
 .env.encrypted
