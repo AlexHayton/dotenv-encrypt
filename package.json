@@ -1,6 +1,6 @@
 {
   "name": "dotenv-encrypt-kms",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A script to encrypt/decrypt a dotenv file using a KMS key",
   "main": "out/index.js",
   "bin": {
