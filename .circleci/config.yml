@@ -59,7 +59,7 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/project/.npmrc
       - run:
           name: Dry run
-          command: npm publish --dry-run
+          command: npm run build && npm publish --dry-run
       - run:
           name: Publish package
           command: |
