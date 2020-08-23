@@ -80,7 +80,7 @@ interface Args {
   decrypt: boolean;
 }
 
-const setupOptions = (commandOptions: Argv) => commandOptions.option("key", {
+const setupOptions = (commandOptions: Argv): Argv => commandOptions.option("key", {
   alias: "k",
   description: "a KMS Key Id",
   string: true,
