@@ -1,22 +1,27 @@
 /* eslint-disable no-param-reassign */
-import * as AWS from "aws-sdk";
+import { encrypt, decrypt } from "@aws-crypto/encrypt-node";
+import { KmsKeyringNode } from "@aws-crypto/kms-keyring-node";
 import { StringKeyedObject } from "./types";
 import { mapStringKeyedObject } from "./util";
+
+const keyring = new KmsKeyringNode
 
 export async function decryptValues(
   encryptedValues: StringKeyedObject,
   kmsKeyId: string,
   region: string,
 ): Promise<StringKeyedObject> {
+  const keyring = new KmsKeyringNode({ generatorKeyId: kmsKeyId, region });
   const kms = new AWS.KMS({ region });
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
       const value = encryptedValues[key];
+      const decodedValue = Buffer.from(value, "base64").toString();
 
       const data = await kms
         .decrypt({
-          CiphertextBlob: Buffer.from(value, "base64"),
+          CiphertextBlob: decodedValue,
           EncryptionContext: { kmsKeyId },
         })
         .promise();
