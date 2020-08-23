@@ -12,8 +12,8 @@ export async function mapStringKeyedObject(
 }
 
 export interface ObjectDifferences {
-  changedKeys: string[],
-  removedKeys: string[],
+  changedKeys: string[];
+  removedKeys: string[];
 }
 export function getObjectDifferences(
   original: StringKeyedObject,
@@ -32,7 +32,7 @@ export function getObjectDifferences(
   return {
     changedKeys,
     removedKeys,
-  }
+  };
 }
 
 export const outputEnvValue = ([key, value]: string[]): string =>

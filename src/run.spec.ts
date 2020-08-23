@@ -78,7 +78,7 @@ describe("Running the CLI", () => {
   });
 
   describe("with a key and region provided", () => {
-    let key: string = uuid();
+    const key = uuid();
     const region = "us-east-1";
     beforeEach(async () => {
       argvMock.key = key;

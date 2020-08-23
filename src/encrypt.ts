@@ -12,7 +12,12 @@ export async function decryptValues(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
       const encryptedValue = encryptedValues[key];
-      const decryptedValue = await decryptValue({ encryptedValue, key, kmsKeyId, region });
+      const decryptedValue = await decryptValue({
+        encryptedValue,
+        key,
+        kmsKeyId,
+        region,
+      });
       obj[key] = decryptedValue;
       return obj;
     }
@@ -36,7 +41,7 @@ export async function decryptValue({
     .decrypt({
       CiphertextBlob: Buffer.from(encryptedValue, "base64"),
       KeyId: kmsKeyId,
-      EncryptionContext: { key }
+      EncryptionContext: { key },
     })
     .promise();
 
@@ -48,12 +53,16 @@ export async function encryptValues(
   kmsKeyId: string,
   region: string
 ): Promise<StringKeyedObject> {
-  const kms = new AWS.KMS({ region });
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
       const value = encryptedValues[key];
-      const encryptedValue = await encryptValue({ plaintextValue: value, key, kmsKeyId, region });
+      const encryptedValue = await encryptValue({
+        plaintextValue: value,
+        key,
+        kmsKeyId,
+        region,
+      });
       obj[key] = encryptedValue;
       return obj;
     }
@@ -71,13 +80,13 @@ export async function encryptValue({
   key,
   kmsKeyId,
   region,
-}: EncryptValueArgs) {
+}: EncryptValueArgs): Promise<string> {
   const kms = new AWS.KMS({ region });
   const data = await kms
     .encrypt({
       KeyId: kmsKeyId,
       Plaintext: plaintextValue,
-      EncryptionContext: { key }
+      EncryptionContext: { key },
     })
     .promise();
 

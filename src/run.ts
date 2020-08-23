@@ -41,7 +41,10 @@ function checkForChanges({
   return true;
 }
 
-async function generateCommentLines(kmsKeyId: string, region: string) {
+async function generateCommentLines(
+  kmsKeyId: string,
+  region: string
+): Promise<string[]> {
   const pj = await import("../package.json");
   return [
     `# Generated with dotenv-decrypt-kms version ${pj.version}`,
