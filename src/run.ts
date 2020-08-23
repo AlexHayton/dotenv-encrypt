@@ -41,13 +41,28 @@ function checkForChanges({
   return true;
 }
 
-async function writeToFile(values: StringKeyedObject, filePath: string): Promise<void> {
+async function generateCommentLines(kmsKeyId: string, region: string) {
+  const pj = await import("../package.json");
+  return [
+    `# Generated with dotenv-decrypt-kms version ${pj.version}`,
+    `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${kmsKeyId} --region=${region}`,
+  ];
+}
+
+async function writeToFile(
+  commentLines: string[],
+  values: StringKeyedObject,
+  filePath: string
+): Promise<void> {
   const newFileLines = toPairs(values).map(outputEnvValue);
-  const newFileContent = newFileLines.join(EOL);
+  const newFileContent = [...commentLines, ...newFileLines].join(EOL);
   await writeFile(filePath, newFileContent);
 }
 
-async function encryptAndWrite(kmsKeyId: string, region: string): Promise<void> {
+async function encryptAndWrite(
+  kmsKeyId: string,
+  region: string
+): Promise<void> {
   const newFile = await readFile(decryptedEnvFilePath);
   const newValues = parse(newFile);
   let oldEncryptedEnv: StringKeyedObject = {};
@@ -63,7 +78,8 @@ async function encryptAndWrite(kmsKeyId: string, region: string): Promise<void> 
   const differences = getObjectDifferences(oldValues, newValues);
   if (checkForChanges(differences)) {
     const encryptedValues = await encryptValues(newValues, kmsKeyId, region);
-    writeToFile(encryptedValues, encryptedEnvFilePath);
+    const commentLines = await generateCommentLines(kmsKeyId, region);
+    writeToFile(commentLines, encryptedValues, encryptedEnvFilePath);
   }
 }
 
@@ -71,7 +87,7 @@ async function decryptAndWrite(key: string, region: string): Promise<void> {
   const encryptedFile = await readFile(encryptedEnvFilePath);
   const encryptedEnv = parse(encryptedFile);
   const decryptedValues = await decryptValues(encryptedEnv, key, region);
-  writeToFile(decryptedValues, decryptedEnvFilePath);
+  writeToFile([], decryptedValues, decryptedEnvFilePath);
 }
 
 interface Args {
@@ -80,16 +96,18 @@ interface Args {
   decrypt: boolean;
 }
 
-const setupOptions = (commandOptions: Argv): Argv => commandOptions.option("key", {
-  alias: "k",
-  description: "a KMS Key Id",
-  string: true,
-})
-.option("region", {
-  alias: "r",
-  description: "an AWS region",
-  string: true,
-});
+const setupOptions = (commandOptions: Argv): Argv =>
+  commandOptions
+    .option("key", {
+      alias: "k",
+      description: "a KMS Key Id",
+      string: true,
+    })
+    .option("region", {
+      alias: "r",
+      description: "an AWS region",
+      string: true,
+    });
 
 export async function run(): Promise<void> {
   const { argv } = yargs

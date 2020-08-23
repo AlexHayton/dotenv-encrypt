@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
+    "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist/"
   },

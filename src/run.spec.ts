@@ -78,9 +78,11 @@ describe("Running the CLI", () => {
   });
 
   describe("with a key and region provided", () => {
+    let key: string = uuid();
+    const region = "us-east-1";
     beforeEach(async () => {
-      argvMock.key = uuid();
-      argvMock.region = "us-east-1";
+      argvMock.key = key;
+      argvMock.region = region;
       if (await exists(DECRYPTED_FILENAME)) {
         await unlink(DECRYPTED_FILENAME);
       }
@@ -101,11 +103,15 @@ describe("Running the CLI", () => {
         expect(mockEncryptValues).toHaveBeenCalledWith(
           { KEY: "VALUE" },
           argvMock.key,
-          argvMock.region,
+          argvMock.region
         );
         expect(mockDecryptValues).not.toHaveBeenCalled();
         const encryptedFile = await readFile(ENCRYPTED_FILENAME);
-        expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
+        expect(encryptedFile.toString()).toEqual(
+          `# Generated with dotenv-decrypt-kms version 1.0.4\n` +
+            `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${key} --region=${region}\n` +
+            'KEY="ENCRYPTED_VALUE"'
+        );
       });
 
       it("skips encryption if the encrypted file hasn't changed", async () => {
@@ -136,7 +142,7 @@ describe("Running the CLI", () => {
             KEY: "ENCRYPTED_VALUE",
           },
           argvMock.key,
-          argvMock.region,
+          argvMock.region
         );
         expect(mockEncryptValues).not.toHaveBeenCalled();
         const decryptedFile = await readFile(DECRYPTED_FILENAME);
