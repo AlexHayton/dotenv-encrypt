@@ -107,8 +107,9 @@ describe("Running the CLI", () => {
         );
         expect(mockDecryptValues).not.toHaveBeenCalled();
         const encryptedFile = await readFile(ENCRYPTED_FILENAME);
+        const expectedVersion = (await import("../package.json")).version;
         expect(encryptedFile.toString()).toEqual(
-          `# Generated with dotenv-decrypt-kms version 1.0.4\n` +
+          `# Generated with dotenv-decrypt-kms version ${expectedVersion}\n` +
             `# To decrypt please run "npx dotenv-encrypt-kms decrypt --key=${key} --region=${region}\n` +
             'KEY="ENCRYPTED_VALUE"'
         );
