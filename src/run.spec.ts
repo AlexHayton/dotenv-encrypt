@@ -77,9 +77,10 @@ describe("Running the CLI", () => {
     });
   });
 
-  describe("with a key provided", () => {
+  describe("with a key and region provided", () => {
     beforeEach(async () => {
       argvMock.key = uuid();
+      argvMock.region = "us-east-1";
       if (await exists(DECRYPTED_FILENAME)) {
         await unlink(DECRYPTED_FILENAME);
       }
@@ -99,7 +100,8 @@ describe("Running the CLI", () => {
 
         expect(mockEncryptValues).toHaveBeenCalledWith(
           { KEY: "VALUE" },
-          argvMock.key
+          argvMock.key,
+          argvMock.region,
         );
         expect(mockDecryptValues).not.toHaveBeenCalled();
         const encryptedFile = await readFile(ENCRYPTED_FILENAME);
@@ -133,7 +135,8 @@ describe("Running the CLI", () => {
           {
             KEY: "ENCRYPTED_VALUE",
           },
-          argvMock.key
+          argvMock.key,
+          argvMock.region,
         );
         expect(mockEncryptValues).not.toHaveBeenCalled();
         const decryptedFile = await readFile(DECRYPTED_FILENAME);

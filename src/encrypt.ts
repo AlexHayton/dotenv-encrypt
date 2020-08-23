@@ -5,9 +5,10 @@ import { mapStringKeyedObject } from "./util";
 
 export async function decryptValues(
   encryptedValues: StringKeyedObject,
-  kmsKeyId: string
+  kmsKeyId: string,
+  region: string,
 ): Promise<StringKeyedObject> {
-  const kms = new AWS.KMS();
+  const kms = new AWS.KMS({ region });
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
@@ -28,9 +29,10 @@ export async function decryptValues(
 
 export async function encryptValues(
   encryptedValues: StringKeyedObject,
-  kmsKeyId: string
+  kmsKeyId: string,
+  region: string,
 ): Promise<StringKeyedObject> {
-  const kms = new AWS.KMS();
+  const kms = new AWS.KMS({ region });
   return mapStringKeyedObject(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {

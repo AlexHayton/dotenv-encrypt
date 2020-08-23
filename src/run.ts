@@ -47,7 +47,7 @@ async function writeToFile(values: StringKeyedObject, filePath: string): Promise
   await writeFile(filePath, newFileContent);
 }
 
-async function encryptAndWrite(kmsKeyId: string): Promise<void> {
+async function encryptAndWrite(kmsKeyId: string, region: string): Promise<void> {
   const newFile = await readFile(decryptedEnvFilePath);
   const newValues = parse(newFile);
   let oldEncryptedEnv: StringKeyedObject = {};
@@ -55,22 +55,22 @@ async function encryptAndWrite(kmsKeyId: string): Promise<void> {
   try {
     const oldEncryptedFile = await readFile(encryptedEnvFilePath);
     oldEncryptedEnv = parse(oldEncryptedFile);
-    oldValues = await decryptValues(oldEncryptedEnv, kmsKeyId);
+    oldValues = await decryptValues(oldEncryptedEnv, kmsKeyId, region);
   } catch (error) {
     console.log("Creating encrypted file at", encryptedEnvFilePath);
   }
 
   const differences = getObjectDifferences(oldValues, newValues);
   if (checkForChanges(differences)) {
-    const encryptedValues = await encryptValues(newValues, kmsKeyId);
+    const encryptedValues = await encryptValues(newValues, kmsKeyId, region);
     writeToFile(encryptedValues, encryptedEnvFilePath);
   }
 }
 
-async function decryptAndWrite(key: string): Promise<void> {
+async function decryptAndWrite(key: string, region: string): Promise<void> {
   const encryptedFile = await readFile(encryptedEnvFilePath);
   const encryptedEnv = parse(encryptedFile);
-  const decryptedValues = await decryptValues(encryptedEnv, key);
+  const decryptedValues = await decryptValues(encryptedEnv, key, region);
   writeToFile(decryptedValues, decryptedEnvFilePath);
 }
 
@@ -79,25 +79,28 @@ interface Args {
   encrypt: boolean;
   decrypt: boolean;
 }
+
+const setupOptions = (commandOptions: Argv) => commandOptions.option("key", {
+  alias: "k",
+  description: "a KMS Key Id",
+  string: true,
+})
+.option("region", {
+  alias: "r",
+  description: "an AWS region",
+  string: true,
+});
+
 export async function run(): Promise<void> {
   const { argv } = yargs
-    .command<Args>("encrypt", "encrypts values", (commandOptions: Argv) =>
-      commandOptions.option("key", {
-        alias: "k",
-        description: "a KMS Key Id",
-        string: true,
-      })
-    )
-    .command<Args>("decrypt", "decrypts values", (commandOptions: Argv) =>
-      commandOptions.option("key", {
-        alias: "k",
-        description: "a KMS Key Id",
-        string: true,
-      })
-    )
+    .command<Args>("encrypt", "encrypts values", setupOptions)
+    .command<Args>("decrypt", "decrypts values", setupOptions)
     .check((args) => {
       if (!args.key) {
         throw new Error("Please provide a KMS key with the --key parameter");
+      }
+      if (!args.region) {
+        throw new Error("Please provide a region with the --region parameter");
       }
       return true;
     })
@@ -105,16 +108,17 @@ export async function run(): Promise<void> {
 
   const [command] = argv._;
   const kmsKeyId = argv.key as string;
+  const region = argv.region as string;
 
   switch (command) {
     case "encrypt": {
-      await encryptAndWrite(kmsKeyId);
+      await encryptAndWrite(kmsKeyId, region);
       console.log(`Successfully encrypted values into ${encryptedEnvFilePath}`);
       return;
     }
 
     case "decrypt": {
-      await decryptAndWrite(kmsKeyId);
+      await decryptAndWrite(kmsKeyId, region);
       console.log(`Successfully decrypted values into ${decryptedEnvFilePath}`);
       return;
     }
