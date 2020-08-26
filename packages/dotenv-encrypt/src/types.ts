@@ -1,4 +1,3 @@
-
 export interface ParseOptions {
   debug?: boolean
 }

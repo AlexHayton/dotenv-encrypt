@@ -1,2 +1,2 @@
-export * from "../../dotenv-encrypt/src/run";
+export * from "./run";
 export * from "./encrypt";

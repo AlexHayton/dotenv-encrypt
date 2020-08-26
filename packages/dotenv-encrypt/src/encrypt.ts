@@ -10,7 +10,7 @@ export async function decryptValues(
     encryptedValues,
     async (obj: StringKeyedObject, key: string) => {
       const encryptedValue = encryptedValues[key];
-      const obj[key] = decryptFunc(encryptedValue);
+      obj[key] = decryptFunc(encryptedValue);
       return obj;
     }
   );
@@ -24,7 +24,7 @@ export async function encryptValues(
     decryptedValues,
     async (obj: StringKeyedObject, key: string) => {
       const value = decryptedValues[key];
-      const obj[key] = await encryptFunc(value);
+      obj[key] = await encryptFunc(value);
       return obj;
     }
   );

@@ -1,15 +1,16 @@
 import fs from "fs";
 import { promisify } from "util";
-import yargs, { Argv } from "yargs";
+import yargs, { Argv, Arguments } from "yargs";
 import { EOL } from "os";
 import toPairs from "lodash/toPairs";
 import { parse } from "./parse";
+import { encryptValues, decryptValues } from "./encrypt";
 import {
   getObjectDifferences,
   outputEnvValue,
   ObjectDifferences,
 } from "./util";
-import { StringKeyedObject } from "./types";
+import { StringKeyedObject, DecryptFunction, EncryptFunction } from "./types";
 
 const decryptedEnvFilePath = "./.env";
 const encryptedEnvFilePath = "./.env.encrypted";
@@ -46,7 +47,7 @@ async function writeToFile(values: StringKeyedObject, filePath: string): Promise
   await writeFile(filePath, newFileContent);
 }
 
-async function encryptAndWrite(kmsKeyId: string): Promise<void> {
+async function encryptAndWrite(encryptFunc: EncryptFunction, decryptFunc: DecryptFunction): Promise<void> {
   const newFile = await readFile(decryptedEnvFilePath);
   const newValues = parse(newFile);
   let oldEncryptedEnv: StringKeyedObject = {};
@@ -54,66 +55,58 @@ async function encryptAndWrite(kmsKeyId: string): Promise<void> {
   try {
     const oldEncryptedFile = await readFile(encryptedEnvFilePath);
     oldEncryptedEnv = parse(oldEncryptedFile);
-    oldValues = await decryptValues(oldEncryptedEnv, kmsKeyId);
+    oldValues = await decryptValues(oldEncryptedEnv, decryptFunc);
   } catch (error) {
     console.log("Creating encrypted file at", encryptedEnvFilePath);
   }
 
   const differences = getObjectDifferences(oldValues, newValues);
   if (checkForChanges(differences)) {
-    const encryptedValues = await encryptValues(newValues, kmsKeyId);
+    const encryptedValues = await encryptValues(newValues, encryptFunc);
     writeToFile(encryptedValues, encryptedEnvFilePath);
   }
 }
 
-async function decryptAndWrite(key: string): Promise<void> {
+async function decryptAndWrite(decryptFunc: DecryptFunction): Promise<void> {
   const encryptedFile = await readFile(encryptedEnvFilePath);
   const encryptedEnv = parse(encryptedFile);
-  const decryptedValues = await decryptValues(encryptedEnv, key);
+  const decryptedValues = await decryptValues(encryptedEnv, decryptFunc);
   writeToFile(decryptedValues, decryptedEnvFilePath);
 }
 
 interface Args {
-  key: string;
   encrypt: boolean;
   decrypt: boolean;
 }
-export async function run(): Promise<void> {
+
+export interface RunCommandOptions<T extends Args> {
+  decryptFunc: (argv: Arguments<T>) => DecryptFunction;
+  encryptFunc: (argv: Arguments<T>) => EncryptFunction;
+  checkArgs: (argv: Arguments<T>) => boolean;
+  setupYargsOptions: (commandOptions: Argv) => Argv;
+}
+
+export async function run<T extends Args>(options: RunCommandOptions<T>): Promise<void> {
   const { argv } = yargs
-    .command<Args>("encrypt", "encrypts values", (commandOptions: Argv) =>
-      commandOptions.option("key", {
-        alias: "k",
-        description: "a KMS Key Id",
-        string: true,
-      })
-    )
-    .command<Args>("decrypt", "decrypts values", (commandOptions: Argv) =>
-      commandOptions.option("key", {
-        alias: "k",
-        description: "a KMS Key Id",
-        string: true,
-      })
-    )
-    .check((args) => {
-      if (!args.key) {
-        throw new Error("Please provide a KMS key with the --key parameter");
-      }
-      return true;
-    })
+    .command<T>("encrypt", "encrypts values", options.setupYargsOptions)
+    .command<T>("decrypt", "decrypts values", options.setupYargsOptions)
+    .check(options.checkArgs)
     .help();
 
   const [command] = argv._;
-  const kmsKeyId = argv.key as string;
+
+  const encrypt = options.encryptFunc(argv);
+  const decrypt = options.decryptFunc(argv);
 
   switch (command) {
     case "encrypt": {
-      await encryptAndWrite(encyptFunc);
+      await encryptAndWrite(encrypt, decrypt);
       console.log(`Successfully encrypted values into ${encryptedEnvFilePath}`);
       return;
     }
 
     case "decrypt": {
-      await decryptAndWrite(encryptFunc);
+      await decryptAndWrite(decrypt);
       console.log(`Successfully decrypted values into ${decryptedEnvFilePath}`);
       return;
     }

@@ -19,19 +19,14 @@ jest.mock("./encrypt");
 const DECRYPTED_FILENAME = "./.env";
 const ENCRYPTED_FILENAME = "./.env.encrypted";
 
-const mockEncryptValues = encryptValues as jest.Mock<any, any>;
-mockEncryptValues.mockResolvedValue({
-  KEY: "ENCRYPTED_VALUE",
-});
-const mockDecryptValues = decryptValues as jest.Mock<any, any>;
-mockDecryptValues.mockResolvedValue({
-  KEY: "VALUE",
-});
-
 describe("Running the CLI", () => {
   let exitMock: any;
   let logMock: any;
   let argvMock: any;
+  let mockEncryptFunc: jest.Mock;
+  let mockDecryptFunc: jest.Mock;
+  let mockYargsOptionsFunction: jest.Mock;
+  let mockCheckFunction: jest.Mock;
   beforeEach(() => {
     exitMock = mockProcessExit();
     logMock = mockConsoleLog();
@@ -40,13 +35,19 @@ describe("Running the CLI", () => {
     yargs.command = jest.fn().mockReturnValue(yargs);
     yargs.check = jest.fn().mockReturnValue(yargs);
     yargs.showHelp = jest.fn();
+    mockEncryptFunc = jest.fn().mockResolvedValue("ENCRYPTED_VALUE");
+    mockDecryptFunc = jest.fn().mockResolvedValue("VALUE");
+    mockYargsOptionsFunction = jest.fn();
+    mockCheckFunction = jest.fn().mockReturnValue(true);
   });
 
   afterEach(() => {
     exitMock.mockRestore();
     logMock.mockRestore();
-    mockEncryptValues.mockClear();
-    mockEncryptValues.mockClear();
+    mockEncryptFunc.mockReset();
+    mockDecryptFunc.mockReset();
+    mockYargsOptionsFunction.mockReset();
+    mockCheckFunction.mockReset();
   });
 
   describe("Yargs setup", () => {
@@ -56,7 +57,7 @@ describe("Running the CLI", () => {
       expect(yargs.command).toHaveBeenCalledWith(
         "encrypt",
         "encrypts values",
-        expect.any(Function)
+        mockYargsOptionsFunction,
       );
     });
 
@@ -64,12 +65,12 @@ describe("Running the CLI", () => {
       expect(yargs.command).toHaveBeenCalledWith(
         "decrypt",
         "decrypts values",
-        expect.any(Function)
+        mockYargsOptionsFunction,
       );
     });
 
     it("should check for the KMS key", () => {
-      expect(yargs.check).toHaveBeenCalled();
+      expect(yargs.check).toHaveBeenCalledWith(mockCheckFunction);
     });
 
     it("should display help", () => {
@@ -97,11 +98,8 @@ describe("Running the CLI", () => {
       it("can encrypt a file end-to-end when none exists yet", async () => {
         await run();
 
-        expect(mockEncryptValues).toHaveBeenCalledWith(
-          { KEY: "VALUE" },
-          argvMock.key
-        );
-        expect(mockDecryptValues).not.toHaveBeenCalled();
+        expect(mockEncryptFunc).toHaveBeenCalledWith("VALUE");
+        expect(mockDecryptFunc).not.toHaveBeenCalled();
         const encryptedFile = await readFile(ENCRYPTED_FILENAME);
         expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
       });
@@ -112,7 +110,22 @@ describe("Running the CLI", () => {
 
         await run();
 
-        expect(mockEncryptValues).not.toHaveBeenCalled();
+        expect(mockDecryptFunc).toHaveBeenCalledWith("ENCRYPTED_VALUE");
+        expect(mockEncryptFunc).toHaveBeenCalledWith("VALUE");
+        const encryptedFile = await readFile(ENCRYPTED_FILENAME);
+        expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
+        const newFileStats = await stat(ENCRYPTED_FILENAME);
+        expect(fileStats.mtimeMs).toEqual(newFileStats.mtimeMs);
+      });
+
+      it("encrypts the file again if the encrypted file changed", async () => {
+        await writeFile(ENCRYPTED_FILENAME, 'KEY="ENCRYPTED_VALUE"');
+        const fileStats = await stat(ENCRYPTED_FILENAME);
+
+        await run();
+
+        expect(mockDecryptFunc).toHaveBeenCalledWith("ENCRYPTED_VALUE");
+        expect(mockEncryptFunc).toHaveBeenCalledWith("VALUE");
         const encryptedFile = await readFile(ENCRYPTED_FILENAME);
         expect(encryptedFile.toString()).toEqual('KEY="ENCRYPTED_VALUE"');
         const newFileStats = await stat(ENCRYPTED_FILENAME);
@@ -129,13 +142,8 @@ describe("Running the CLI", () => {
       it("can decrypt a file end-to-end", async () => {
         await run();
 
-        expect(mockDecryptValues).toHaveBeenCalledWith(
-          {
-            KEY: "ENCRYPTED_VALUE",
-          },
-          argvMock.key
-        );
-        expect(mockEncryptValues).not.toHaveBeenCalled();
+        expect(mockDecryptFunc).toHaveBeenCalledWith("ENCRYPTED_VALUE");
+        expect(mockEncryptFunc).not.toHaveBeenCalled();
         const decryptedFile = await readFile(DECRYPTED_FILENAME);
         expect(decryptedFile.toString()).toEqual('KEY="VALUE"');
       });

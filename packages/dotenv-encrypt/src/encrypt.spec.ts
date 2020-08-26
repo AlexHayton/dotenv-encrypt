@@ -1,7 +1,3 @@
-import { v4 as uuid } from "uuid";
-
-const kmsKeyId = uuid();
-
 const mockEncryptFunc = jest.fn();
 const mockDecryptFunc = jest.fn();
 
@@ -26,7 +22,7 @@ describe("Encryption via KMS", () => {
       MULTILINE_STRING: "multi\nline",
       VALUE1: "single line",
     };
-    const encrypted = await encryptValues(valuesToEncrypt, kmsKeyId);
+    const encrypted = await encryptValues(valuesToEncrypt, mockEncryptFunc);
     expect(mockEncryptFunc).toHaveBeenCalledTimes(4);
     expect(mockDecryptFunc).not.toHaveBeenCalled();
     expect(Object.keys(encrypted)).toEqual(Object.keys(valuesToEncrypt));
@@ -40,7 +36,7 @@ describe("Encryption via KMS", () => {
       MULTILINE_STRING: "ENCRYPTED",
       VALUE1: "ENCRYPTED",
     };
-    const decrypted = await decryptValues(valuesToDecrypt, kmsKeyId);
+    const decrypted = await decryptValues(valuesToDecrypt, mockDecryptFunc);
     expect(mockEncryptFunc).not.toHaveBeenCalled();
     expect(mockDecryptFunc).toHaveBeenCalledTimes(4);
     expect(Object.keys(decrypted)).toEqual(Object.keys(valuesToDecrypt));

@@ -83,5 +83,6 @@ src/**/*.js
 # Compiled JavaScript files
 dist
 
+.vscode/
 .env
 .env.encrypted
